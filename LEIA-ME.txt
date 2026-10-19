@@ -1,0 +1,34 @@
+# VendeFácil — pacote para publicar gratuitamente
+
+## O que está incluído
+- `index.html`: aplicativo web.
+- `manifest.webmanifest`: permite que navegadores compatíveis ofereçam instalação.
+- `sw.js`: cache básico para abrir a aplicação offline depois da primeira visita.
+- `icon-192.png` e `icon-512.png`: ícones do aplicativo.
+
+## Publicar gratuitamente pelo GitHub Pages (sem programar)
+1. No celular ou computador, entre em https://github.com/ e crie uma conta gratuita, se ainda não tiver.
+2. Crie um repositório novo chamado `vendefacil`. Para publicação gratuita pelo GitHub Free, deixe-o **público**.
+3. Abra o repositório e escolha **Add file → Upload files**.
+4. Envie todos os arquivos desta pasta (não envie apenas o ZIP): `index.html`, `manifest.webmanifest`, `sw.js`, `icon-192.png` e `icon-512.png`.
+5. Toque em **Commit changes**.
+6. Entre em **Settings → Pages**.
+7. Em **Build and deployment**, escolha **Deploy from a branch**; selecione `main` e a pasta `/(root)`, depois salve.
+8. Aguarde a publicação. O endereço será parecido com `https://SEU-USUARIO.github.io/vendefacil/`. Troque `SEU-USUARIO` pelo nome real da sua conta.
+9. Abra o endereço no celular e teste cadastro, edição, pedidos e calculadora.
+
+## Instalar no celular
+- Android: abra o site no Chrome e procure **Instalar app** ou **Adicionar à tela inicial** no menu.
+- iPhone: abra no Safari, toque em Compartilhar e depois **Adicionar à Tela de Início**.
+Os nomes dos menus podem variar conforme versão do sistema/navegador.
+
+## Limitações importantes da versão atual
+- Os dados são guardados localmente no navegador/dispositivo. Não há sincronização, conta de usuário nem backup em nuvem.
+- Limpar os dados do navegador pode apagar produtos e pedidos. Não use dados sensíveis.
+- O modo offline usa cache básico; abra o site uma vez com internet antes de tentar usá-lo offline.
+- Ainda não é um aplicativo publicado na Google Play ou App Store.
+- GitHub Pages é hospedagem de site estático, não um servidor para guardar os dados dos usuários.
+- O repositório público e o site publicado são visíveis publicamente; não coloque informações privadas nos arquivos.
+
+## Próxima melhoria recomendada
+Antes de cobrar assinatura, conversar com 10 a 20 pequenos vendedores e testar a utilidade. Depois, planejar login e banco de dados em serviço com camada gratuita, avaliando limites e políticas de privacidade.

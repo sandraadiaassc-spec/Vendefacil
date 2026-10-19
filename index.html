@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#166534">
+<meta name="description" content="Organize produtos, pedidos e estimativas de lucro no seu pequeno negócio.">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<title>VendeFácil — Controle do seu negócio</title>
+<style>
+:root{--green:#166534;--green2:#15803d;--light:#f0fdf4;--ink:#17211b;--muted:#647067;--line:#e1e8e2;--bg:#f6f8f6;--white:#fff;--red:#b91c1c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{background:var(--green);color:#fff;padding:22px 18px 18px}header .wrap,main{max-width:980px;margin:auto}h1{font-size:1.5rem;margin:0 0 4px}header p{margin:0;color:#dcfce7;font-size:.94rem}
+nav{display:flex;gap:8px;max-width:980px;margin:0 auto;padding:12px 14px;overflow:auto}
+nav button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:10px 15px;font-weight:650;white-space:nowrap;color:var(--ink);cursor:pointer}
+nav button.active{background:var(--green);color:#fff;border-color:var(--green)}
+main{padding:0 14px 36px}.page{display:none}.page.active{display:block}
+h2{font-size:1.25rem;margin:12px 0}.sub{color:var(--muted);margin-top:-4px;font-size:.92rem}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}
+.card,.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 2px 8px #14281408}
+.metric-label{font-size:.83rem;color:var(--muted)}.metric{font-size:1.45rem;font-weight:800;margin-top:5px;overflow-wrap:anywhere}
+.panel{margin:14px 0}.panel h3{margin:0 0 12px;font-size:1.05rem}
+form .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+label{display:block;font-size:.88rem;font-weight:650;margin-bottom:5px}
+input,select,textarea{width:100%;border:1px solid #cbd5ce;border-radius:10px;padding:11px 12px;font:inherit;background:#fff;color:var(--ink)}
+input:focus,select:focus{outline:2px solid #86efac;border-color:var(--green)}
+button.primary{background:var(--green);color:#fff;border:0;border-radius:10px;padding:12px 16px;font-weight:750;cursor:pointer;margin-top:12px}
+button.secondary{background:#fff;color:var(--green);border:1px solid var(--green);border-radius:9px;padding:8px 11px;font-weight:650;cursor:pointer}
+button.danger{background:#fff;color:var(--red);border:1px solid #fecaca;border-radius:9px;padding:8px 11px;cursor:pointer}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.list{display:grid;gap:9px}.item{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.item strong{display:block}.small{font-size:.85rem;color:var(--muted)}.price{font-weight:800;color:var(--green);white-space:nowrap}
+.empty{color:var(--muted);padding:12px 0}.notice{background:var(--light);border:1px solid #bbf7d0;border-radius:12px;padding:12px;font-size:.9rem}
+.result{font-size:1.2rem;font-weight:800;color:var(--green);margin-top:12px}
+footer{text-align:center;color:var(--muted);font-size:.8rem;padding:18px}
+@media(max-width:620px){.cards{grid-template-columns:1fr}.metric{font-size:1.35rem}form .grid{grid-template-columns:1fr}.item{align-items:flex-start}.item .actions{display:flex;gap:6px;flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><h1>🌱 VendeFácil</h1><p>Organize seus produtos, pedidos e lucro — sem complicação.</p></div></header>
+<nav aria-label="Navegação principal">
+<button class="active" data-page="inicio">Visão geral</button>
+<button data-page="produtos">Produtos e preços</button>
+<button data-page="pedidos">Pedidos</button>
+<button data-page="calculadora">Calcular lucro</button>
+</nav>
+<main>
+<section id="inicio" class="page active">
+<h2>Seu negócio em um só lugar</h2><p class="sub">Uma primeira versão para testar com seu pequeno negócio.</p>
+<div class="cards">
+<div class="card"><div class="metric-label">Produtos cadastrados</div><div class="metric" id="metricProducts">0</div></div>
+<div class="card"><div class="metric-label">Pedidos registrados</div><div class="metric" id="metricOrders">0</div></div>
+<div class="card"><div class="metric-label">Vendas registradas</div><div class="metric" id="metricSales">R$ 0,00</div></div>
+</div>
+<div class="panel"><h3>Comece por aqui</h3><div class="notice">1. Cadastre seus produtos e o preço de venda. 2. Registre cada pedido. 3. Use a calculadora para conferir se o preço cobre seus custos.</div>
+<div class="row" style="margin-top:14px"><button class="primary" onclick="showPage('produtos')">Cadastrar produto</button><button class="secondary" onclick="showPage('pedidos')">Registrar pedido</button></div></div>
+<div class="panel"><h3>Últimos pedidos</h3><div id="recentOrders" class="list"><p class="empty">Seus pedidos aparecerão aqui.</p></div></div>
+</section>
+<section id="produtos" class="page">
+<h2>Produtos e preços</h2><p class="sub">Cadastre o que você vende e acompanhe o custo estimado por unidade.</p>
+<div class="panel"><h3 id="productFormTitle">Adicionar produto</h3>
+<form id="productForm"><input type="hidden" id="productId">
+<div class="grid">
+<div><label for="productName">Nome do produto</label><input id="productName" required placeholder="Ex.: Tapioca de frango"></div>
+<div><label for="productCategory">Categoria</label><select id="productCategory"><option>Comida</option><option>Bebida</option><option>Doce</option><option>Serviço</option><option>Outro</option></select></div>
+<div><label for="productCost">Custo por unidade (R$)</label><input id="productCost" required type="number" min="0" step=".01" placeholder="Ex.: 4,50"></div>
+<div><label for="productPrice">Preço de venda (R$)</label><input id="productPrice" required type="number" min="0" step=".01" placeholder="Ex.: 10,00"></div>
+</div><button class="primary" type="submit">Salvar produto</button> <button class="secondary" type="button" id="cancelEdit" hidden>Cancelar edição</button>
+</form></div>
+<div class="panel"><h3>Seus produtos</h3><div id="productList" class="list"><p class="empty">Nenhum produto cadastrado ainda.</p></div></div>
+</section>
+<section id="pedidos" class="page">
+<h2>Registrar pedido</h2><p class="sub">Anote vendas para acompanhar o movimento do negócio.</p>
+<div class="panel"><form id="orderForm"><div class="grid">
+<div><label for="customer">Cliente (opcional)</label><input id="customer" placeholder="Nome do cliente"></div>
+<div><label for="orderProduct">Produto</label><select id="orderProduct" required><option value="">Cadastre um produto primeiro</option></select></div>
+<div><label for="orderQty">Quantidade</label><input id="orderQty" type="number" min="1" step="1" value="1" required></div>
+<div><label for="orderStatus">Situação</label><select id="orderStatus"><option value="Recebido">Recebido</option><option value="Em preparo">Em preparo</option><option value="Entregue">Entregue</option><option value="Cancelado">Cancelado</option></select></div>
+</div><div id="orderEstimate" class="result">Total: R$ 0,00</div><button class="primary" type="submit">Registrar pedido</button></form></div>
+<div class="panel"><h3>Histórico de pedidos</h3><div id="orderList" class="list"><p class="empty">Nenhum pedido registrado ainda.</p></div></div>
+</section>
+<section id="calculadora" class="page">
+<h2>Calculadora de preço e lucro</h2><p class="sub">Faça uma estimativa simples antes de definir seu preço.</p>
+<div class="panel"><form id="calcForm"><div class="grid">
+<div><label for="calcCost">Custo total por unidade (R$)</label><input id="calcCost" type="number" min="0" step=".01" value="4.00" required></div>
+<div><label for="calcPrice">Preço de venda por unidade (R$)</label><input id="calcPrice" type="number" min="0" step=".01" value="10.00" required></div>
+<div><label for="calcQty">Unidades vendidas</label><input id="calcQty" type="number" min="1" step="1" value="10" required></div>
+<div><label for="calcFees">Outros custos por unidade (R$)</label><input id="calcFees" type="number" min="0" step=".01" value="0.00" required></div>
+</div><button class="primary" type="submit">Calcular</button></form>
+<div id="calcResult" class="notice" style="margin-top:14px">Preencha os valores e toque em Calcular.</div></div>
+<p class="small">A estimativa não inclui automaticamente impostos, taxas de entrega, perdas ou custos fixos. Inclua-os manualmente para chegar mais perto do lucro real.</p>
+</section>
+</main>
+<footer>VendeFácil • Protótipo inicial gratuito • Os dados ficam salvos neste navegador/dispositivo.</footer>
+<script>
+const money = n => (Number(n)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const read = key => {try{return JSON.parse(localStorage.getItem(key)||'[]')}catch(e){return []}};
+const save = (key,val) => localStorage.setItem(key,JSON.stringify(val));
+let products=read('vf_products'), orders=read('vf_orders');
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));window.scrollTo({top:0,behavior:'smooth'});render()}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+function safe(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function render(){
+document.getElementById('metricProducts').textContent=products.length;
+document.getElementById('metricOrders').textContent=orders.filter(o=>o.status!=='Cancelado').length;
+document.getElementById('metricSales').textContent=money(orders.filter(o=>o.status!=='Cancelado').reduce((s,o)=>s+o.total,0));
+const pl=document.getElementById('productList');
+pl.innerHTML=products.length?products.map(p=>`<div class="item"><div><strong>${safe(p.name)}</strong><div class="small">${safe(p.category)} · Custo ${money(p.cost)} · Ganho bruto estimado ${money(p.price-p.cost)}</div></div><div class="actions"><span class="price">${money(p.price)}</span> <button class="secondary" onclick="editProduct('${p.id}')">Editar</button> <button class="danger" onclick="deleteProduct('${p.id}')">Excluir</button></div></div>`).join(''):'<p class="empty">Nenhum produto cadastrado ainda.</p>';
+const sel=document.getElementById('orderProduct'), old=sel.value;
+sel.innerHTML=products.length?'<option value="">Escolha um produto</option>'+products.map(p=>`<option value="${p.id}">${safe(p.name)} — ${money(p.price)}</option>`).join(''):'<option value="">Cadastre um produto primeiro</option>';
+if(products.some(p=>p.id===old))sel.value=old;
+const ol=document.getElementById('orderList');
+ol.innerHTML=orders.length?[...orders].reverse().map(o=>`<div class="item"><div><strong>${safe(o.customer||'Cliente não informado')}</strong><div class="small">${safe(o.productName)} × ${o.qty} · ${new Date(o.date).toLocaleDateString('pt-BR')} · ${safe(o.status)}</div></div><div class="actions"><span class="price">${money(o.total)}</span> <button class="danger" onclick="deleteOrder('${o.id}')">Excluir</button></div></div>`).join(''):'<p class="empty">Nenhum pedido registrado ainda.</p>';
+const recent=document.getElementById('recentOrders');
+recent.innerHTML=orders.length?[...orders].reverse().slice(0,3).map(o=>`<div class="item"><div><strong>${safe(o.productName)} × ${o.qty}</strong><div class="small">${safe(o.status)} · ${safe(o.customer||'Cliente não informado')}</div></div><span class="price">${money(o.total)}</span></div>`).join(''):'<p class="empty">Seus pedidos aparecerão aqui.</p>';
+updateEstimate();
+}
+document.getElementById('productForm').addEventListener('submit',e=>{e.preventDefault();const id=document.getElementById('productId').value;const p={id:id||String(Date.now()),name:document.getElementById('productName').value.trim(),category:document.getElementById('productCategory').value,cost:Number(document.getElementById('productCost').value),price:Number(document.getElementById('productPrice').value)};if(!p.name)return;if(id)products=products.map(x=>x.id===id?p:x);else products.push(p);save('vf_products',products);e.target.reset();document.getElementById('productId').value='';document.getElementById('productFormTitle').textContent='Adicionar produto';document.getElementById('cancelEdit').hidden=true;render()});
+window.editProduct=id=>{const p=products.find(x=>x.id===id);if(!p)return;document.getElementById('productId').value=p.id;document.getElementById('productName').value=p.name;document.getElementById('productCategory').value=p.category;document.getElementById('productCost').value=p.cost;document.getElementById('productPrice').value=p.price;document.getElementById('productFormTitle').textContent='Editar produto';document.getElementById('cancelEdit').hidden=false;showPage('produtos');window.scrollTo({top:180,behavior:'smooth'})};
+document.getElementById('cancelEdit').addEventListener('click',()=>{document.getElementById('productForm').reset();document.getElementById('productId').value='';document.getElementById('productFormTitle').textContent='Adicionar produto';document.getElementById('cancelEdit').hidden=true});
+window.deleteProduct=id=>{if(confirm('Excluir este produto?')){products=products.filter(p=>p.id!==id);save('vf_products',products);render()}};
+document.getElementById('orderProduct').addEventListener('change',updateEstimate);document.getElementById('orderQty').addEventListener('input',updateEstimate);
+function updateEstimate(){const p=products.find(p=>p.id===document.getElementById('orderProduct').value);const q=Math.max(1,Number(document.getElementById('orderQty').value)||1);document.getElementById('orderEstimate').textContent='Total: '+money(p?p.price*q:0)}
+document.getElementById('orderForm').addEventListener('submit',e=>{e.preventDefault();const p=products.find(p=>p.id===document.getElementById('orderProduct').value);if(!p){alert('Cadastre e selecione um produto primeiro.');return}const q=Math.max(1,Number(document.getElementById('orderQty').value)||1);orders.push({id:String(Date.now()),customer:document.getElementById('customer').value.trim(),productId:p.id,productName:p.name,qty:q,total:p.price*q,status:document.getElementById('orderStatus').value,date:new Date().toISOString()});save('vf_orders',orders);document.getElementById('customer').value='';document.getElementById('orderQty').value=1;render()});
+window.deleteOrder=id=>{if(confirm('Excluir este pedido?')){orders=orders.filter(o=>o.id!==id);save('vf_orders',orders);render()}};
+document.getElementById('calcForm').addEventListener('submit',e=>{e.preventDefault();const c=Number(document.getElementById('calcCost').value)||0,p=Number(document.getElementById('calcPrice').value)||0,q=Math.max(1,Number(document.getElementById('calcQty').value)||1),f=Number(document.getElementById('calcFees').value)||0;const unit=p-c-f,total=unit*q,margin=p?unit/p*100:0;document.getElementById('calcResult').innerHTML=`<strong>Resultado estimado</strong><br>Receita: ${money(p*q)}<br>Custo total informado: ${money((c+f)*q)}<br>Resultado após esses custos: <strong>${money(total)}</strong><br>Margem estimada: <strong>${margin.toLocaleString('pt-BR',{maximumFractionDigits:1})}%</strong>${unit<0?'<br><span style="color:#b91c1c">Atenção: o preço está abaixo dos custos informados.</span>':''}`});
+render();
+// Offline support. Requires HTTPS or localhost.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+</script>
+</body></html>
